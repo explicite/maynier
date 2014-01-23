@@ -10,8 +10,13 @@ import scala.swing.Orientation._
  *         Date: 1/22/14
  */
 object App extends SwingApplication {
-  val data = Seq((0, 0)).toXYSeriesCollection("default")
-  val chart: XYChart = XYDeviationChart(data, title = "CTPc" , rangeAxisLabel = "%")
+  val Vr: Seq[Double] = Seq(4.271768789, 4.253662777, 4.186012187, 4.587602184, 4.563631816, 4.563631816, 5.064236646, 5.064236646, 6.147445089, 6.208296092, 6.347445089, 8.90295406, 9.10295406, 12.95147088)
+
+  val CTPData = Seq((0, 0)).toXYSeriesCollection("default")
+  val CTPChart: XYChart = XYDeviationChart(CTPData, title = "CTP", rangeAxisLabel = "%", domainAxisLabel = "T[s]")
+
+  val hardnessData = Seq((0, 0)).toXYSeriesCollection("default")
+  val hardnessChart: XYChart = XYDeviationChart(hardnessData, title = "Hardness", rangeAxisLabel = "HV")
 
   val carbon = field
   carbon.text = "0.35"
@@ -41,20 +46,23 @@ object App extends SwingApplication {
   vanadium.text = "0.05"
   val vanadiumLabel = new Label("V")
 
-  val temperature = field
-  temperature.text = "900"
+  val astenitizintTemperature = field
+  astenitizintTemperature.text = "900"
   val temperatureLabel = new Label("T")
 
-  val time = field
-  time.text = "1800"
+  val astenitizintTime = field
+  astenitizintTime.text = "1800"
   val timeLabel = new Label("t")
 
-  val speed = field
-  val speedLabel = new Label("v")
+  val temperingTemperature = field
+  temperingTemperature.text = "400"
+
+  val temperingTime = field
+  temperingTime.text = "1800"
 
   val compute = new Button("compute")
 
-  val period = new GridPanel(7, 2) {
+  val alloyingElements = new GridPanel(7, 2) {
     contents ++= carbon :: carbonLabel ::
       manganese :: manganeseLabel ::
       sulfur :: sulfurLabel ::
@@ -63,68 +71,90 @@ object App extends SwingApplication {
       molybdenum :: molybdenumLabel ::
       vanadium :: vanadiumLabel :: Nil
     border = BorderFactory.createCompoundBorder(
-      BorderFactory.createTitledBorder("periods"),
+      BorderFactory.createTitledBorder("alloying elements"),
       BorderFactory.createEmptyBorder(5, 5, 5, 5)
     )
   }
 
-  val parameters = new GridPanel(3, 2) {
-    contents ++= temperature :: temperatureLabel ::
-      time :: timeLabel ::
-      speed :: speedLabel :: Nil
+  val austenitizing = new GridPanel(2, 2) {
+    contents ++= astenitizintTemperature :: temperatureLabel ::
+      astenitizintTime :: timeLabel :: Nil
 
     border = BorderFactory.createCompoundBorder(
-      BorderFactory.createTitledBorder("parameters"),
+      BorderFactory.createTitledBorder("austenitizing"),
+      BorderFactory.createEmptyBorder(5, 5, 5, 5)
+    )
+  }
+
+  val tempering = new GridPanel(2, 2) {
+    contents ++= temperingTemperature :: temperatureLabel ::
+      temperingTime :: timeLabel :: Nil
+
+    border = BorderFactory.createCompoundBorder(
+      BorderFactory.createTitledBorder("tempering"),
       BorderFactory.createEmptyBorder(5, 5, 5, 5)
     )
   }
 
   val menu = new BoxPanel(Vertical) {
-    contents ++= period :: parameters :: compute :: Nil
+    contents ++= alloyingElements :: austenitizing :: tempering :: compute :: Nil
+  }
+
+  val charts = new BoxPanel(Vertical) {
+    contents ++= CTPChart.toPanel :: hardnessChart.toPanel :: Nil
   }
 
   lazy val panel = new FlowPanel() {
-    contents ++= menu :: chart.toPanel :: Nil
+    contents ++= menu :: charts :: Nil
   }
 
   def top = new MainFrame {
 
-    title = "Maynier"
+    title = "Maynier Model"
     contents = panel
 
     listenTo(compute)
     reactions += {
       case ButtonClicked(`compute`) =>
-        val model: Mayiner = Mayiner(carbon, manganese, nickel, chromium, molybdenum, sulfur, vanadium, temperature, time, speed)
-
-        data.removeAllSeries()
-        data.addSeries(
+        val model: Mayiner = Mayiner(carbon, manganese, nickel, chromium, molybdenum, sulfur, vanadium, astenitizintTemperature, astenitizintTime, temperingTemperature, temperingTime)
+        val points: Seq[Double] = model.transitPoints
+        CTPData.removeAllSeries()
+        CTPData.addSeries(
           Seq(
-            (model.m100, 100),
-            (model.m90, 90),
-            (model.m50, 50),
-            (model.b100, 0),
-            (model.fp50, 0)).toXYSeries("martensite"))
+            (points(0), 100),
+            (points(1), 90),
+            (points(2), 50),
+            (points(3), 0),
+            (points(7), 0)).toXYSeries("martensite"))
 
-        data.addSeries(
+        CTPData.addSeries(
           Seq(
-            (model.m100, 0),
-            (model.m90, 10),
-            (model.m50, 50),
-            (model.b100, 100),
-            (model.b90, 90),
-            (model.b50, 50),
-            (model.fp90, 10),
-            (model.fp50, 0)).toXYSeries("bainite"))
+            (points(0), 0),
+            (points(1), 10),
+            (points(2), 50),
+            (points(3), 100),
+            (points(4), 90),
+            (points(5), 50),
+            (points(6), 10),
+            (points(7), 0)).toXYSeries("bainite"))
 
-        data.addSeries(
+        CTPData.addSeries(
           Seq(
-            (model.m100, 0),
-            (model.b100, 0),
-            (model.b90, 10),
-            (model.b50, 50),
-            (model.fp50, 100),
-            (model.fp90, 90)).toXYSeries("ferrite-perlite"))
+            (points(0), 0),
+            (points(3), 0),
+            (points(4), 10),
+            (points(5), 50),
+            (points(7), 100),
+            (points(6), 90)).toXYSeries("ferrite-perlite"))
+
+        hardnessData.removeAllSeries()
+
+        val hardeningV: Seq[Double] = Vr.map(model.hardeningHardness)
+        hardnessData.addSeries((for (i <- 1 to Vr.length + 1) yield i).view.zip(hardeningV).toXYSeries("hardening"))
+
+        val temperingV: Seq[Double] = Vr.map(model.temperingHardness)
+        hardnessData.addSeries((for (i <- 1 to Vr.length + 1) yield i).view.zip(temperingV).toXYSeries("tempering"))
+
     }
   }
 
