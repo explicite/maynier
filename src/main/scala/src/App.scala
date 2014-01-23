@@ -1,4 +1,5 @@
 import javax.swing.BorderFactory
+import org.jfree.chart.axis.LogAxis
 import scala.swing.event.ButtonClicked
 import scalax.chart.XYChart
 import scala.swing._
@@ -10,59 +11,60 @@ import scala.swing.Orientation._
  *         Date: 1/22/14
  */
 object App extends SwingApplication {
-  val Vr: Seq[Double] = Seq(4.271768789, 4.253662777, 4.186012187, 4.587602184, 4.563631816, 4.563631816, 5.064236646, 5.064236646, 6.147445089, 6.208296092, 6.347445089, 8.90295406, 9.10295406, 12.95147088)
+  lazy val Vr: Seq[Double] = Seq(4.271768789, 4.253662777, 4.186012187, 4.587602184, 4.563631816, 4.563631816, 5.064236646, 5.064236646, 6.147445089, 6.208296092, 6.347445089, 8.90295406, 9.10295406, 12.95147088)
 
-  val CTPData = Seq((0, 0)).toXYSeriesCollection("default")
-  val CTPChart: XYChart = XYDeviationChart(CTPData, title = "CTP", rangeAxisLabel = "%", domainAxisLabel = "T[s]")
+  lazy val CTPData = Seq((0, 0)).toXYSeriesCollection("default")
+  lazy val CTPChart: XYChart = XYDeviationChart(CTPData, title = "CTP", rangeAxisLabel = "%", domainAxisLabel = "T[s]")
+  CTPChart.plot.setDomainAxis(new LogAxis())
 
-  val hardnessData = Seq((0, 0)).toXYSeriesCollection("default")
-  val hardnessChart: XYChart = XYDeviationChart(hardnessData, title = "Hardness", rangeAxisLabel = "HV")
+  lazy val hardnessData = Seq((0, 0)).toXYSeriesCollection("default")
+  lazy val hardnessChart: XYChart = XYDeviationChart(hardnessData, title = "Hardness", rangeAxisLabel = "HV")
 
-  val carbon = field
+  lazy val carbon = field
   carbon.text = "0.35"
-  val carbonLabel = new Label("C")
+  lazy val carbonLabel = new Label("C")
 
-  val manganese = field
+  lazy val manganese = field
   manganese.text = "0.72"
-  val manganeseLabel = new Label("Mn")
+  lazy val manganeseLabel = new Label("Mn")
 
-  val nickel = field
+  lazy val nickel = field
   nickel.text = "0.09"
-  val nickelLabel = new Label("Ni")
+  lazy val nickelLabel = new Label("Ni")
 
-  val chromium = field
+  lazy val chromium = field
   chromium.text = "1.13"
-  val chromiumLabel = new Label("Cr")
+  lazy val chromiumLabel = new Label("Cr")
 
-  val molybdenum = field
+  lazy val molybdenum = field
   molybdenum.text = "0.26"
-  val molybdenumLabel = new Label("Mo")
+  lazy val molybdenumLabel = new Label("Mo")
 
-  val sulfur = field
+  lazy val sulfur = field
   sulfur.text = "0.40"
-  val sulfurLabel = new Label("S")
+  lazy val sulfurLabel = new Label("S")
 
-  val vanadium = field
+  lazy val vanadium = field
   vanadium.text = "0.05"
-  val vanadiumLabel = new Label("V")
+  lazy val vanadiumLabel = new Label("V")
 
-  val astenitizintTemperature = field
+  lazy val astenitizintTemperature = field
   astenitizintTemperature.text = "900"
-  val temperatureLabel = new Label("T")
+  lazy val temperatureLabel = new Label("T")
 
-  val astenitizintTime = field
+  lazy val astenitizintTime = field
   astenitizintTime.text = "1800"
-  val timeLabel = new Label("t")
+  lazy val timeLabel = new Label("t")
 
-  val temperingTemperature = field
+  lazy val temperingTemperature = field
   temperingTemperature.text = "400"
 
-  val temperingTime = field
+  lazy val temperingTime = field
   temperingTime.text = "1800"
 
-  val compute = new Button("compute")
+  lazy val compute = new Button("compute")
 
-  val alloyingElements = new GridPanel(7, 2) {
+  lazy val alloyingElements = new GridPanel(7, 2) {
     contents ++= carbon :: carbonLabel ::
       manganese :: manganeseLabel ::
       sulfur :: sulfurLabel ::
@@ -76,7 +78,7 @@ object App extends SwingApplication {
     )
   }
 
-  val austenitizing = new GridPanel(2, 2) {
+  lazy val austenitizing = new GridPanel(2, 2) {
     contents ++= astenitizintTemperature :: temperatureLabel ::
       astenitizintTime :: timeLabel :: Nil
 
@@ -86,7 +88,7 @@ object App extends SwingApplication {
     )
   }
 
-  val tempering = new GridPanel(2, 2) {
+  lazy val tempering = new GridPanel(2, 2) {
     contents ++= temperingTemperature :: temperatureLabel ::
       temperingTime :: timeLabel :: Nil
 
@@ -96,11 +98,11 @@ object App extends SwingApplication {
     )
   }
 
-  val menu = new BoxPanel(Vertical) {
+  lazy val menu = new BoxPanel(Vertical) {
     contents ++= alloyingElements :: austenitizing :: tempering :: compute :: Nil
   }
 
-  val charts = new BoxPanel(Vertical) {
+  lazy val charts = new BoxPanel(Vertical) {
     contents ++= CTPChart.toPanel :: hardnessChart.toPanel :: Nil
   }
 
@@ -108,10 +110,12 @@ object App extends SwingApplication {
     contents ++= menu :: charts :: Nil
   }
 
+  lazy val scrollPanel = new ScrollPane(panel)
+
   def top = new MainFrame {
 
     title = "Maynier Model"
-    contents = panel
+    contents = scrollPanel
 
     listenTo(compute)
     reactions += {
