@@ -149,8 +149,8 @@ object App extends SwingApplication {
 
         hardnessData.removeAllSeries()
 
-        val hardeningV: Seq[Double] = Vr.map(model.hardeningHardness)
-        hardnessData.addSeries((for (i <- 1 to Vr.length + 1) yield i).view.zip(hardeningV).toXYSeries("hardening"))
+        val hardeningV: Seq[Double] = Vr.map(model.quenchingHardness)
+        hardnessData.addSeries((for (i <- 1 to Vr.length + 1) yield i).view.zip(hardeningV).toXYSeries("quenching"))
 
         val temperingV: Seq[Double] = Vr.map(model.temperingHardness)
         hardnessData.addSeries((for (i <- 1 to Vr.length + 1) yield i).view.zip(temperingV).toXYSeries("tempering"))

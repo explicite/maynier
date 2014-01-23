@@ -52,15 +52,15 @@ case class Mayiner(C: Double, Mn: Double, Ni: Double, Cr: Double, Mo: Double, S:
     Seq(m100, m90, m50, b100, b90, b50, fp90, fp50)
   }
 
-  def martensiteHardening(Vr: Double): Double = 127 + (949 * C) + (27 * S) + (11 * Mn) + (8 * Ni) + (16 * Cr) + (21 * log10(Vr))
+  def martensiteQuenching(Vr: Double): Double = 127 + (949 * C) + (27 * S) + (11 * Mn) + (8 * Ni) + (16 * Cr) + (21 * log10(Vr))
 
-  def bainiteHardening(Vr: Double): Double = -323 + (158 * C) + (330 * S) + (153 * Mn) + (65 * Ni) + (144 * Cr) + (191 * Mo) + log10(Vr * (89 + (53 * C) - (55 * S) - (22 * Mn) - (10 * Ni) - (20 * Cr) - (33 * Mo)))
+  def bainiteQuenching(Vr: Double): Double = -323 + (158 * C) + (330 * S) + (153 * Mn) + (65 * Ni) + (144 * Cr) + (191 * Mo) + (log10(Vr) * (89 + (53 * C) - (55 * S) - (22 * Mn) - (10 * Ni) - (20 * Cr) - (33 * Mo)))
 
-  def perliteFerriteHardening(Vr: Double): Double = 42 + (223 * C) + (53 * S) + (30 * Mn) + (12.6 * Ni) + (7 * Cr) + (19 * Mo) + log10(Vr * (10 - (19 * S) + (4 * Ni) + (8 * Cr) + (130 * V)))
+  def perliteFerriteQuenching(Vr: Double): Double = 42 + (223 * C) + (53 * S) + (30 * Mn) + (12.6 * Ni) + (7 * Cr) + (19 * Mo) + (log10(Vr) * (10 - (19 * S) + (4 * Ni) + (8 * Cr) + (130 * V)))
 
-  def hardeningHardness(Vr: Double): Double = {
+  def quenchingHardness(Vr: Double): Double = {
     val structure = findStructure(Vr)
-    (martensiteHardening(Vr) * structure._1) + (bainiteHardening(Vr) * structure._2) + (perliteFerriteHardening(Vr) * structure._3)
+    (martensiteQuenching(Vr) * structure._1) + (bainiteQuenching(Vr) * structure._2) + (perliteFerriteQuenching(Vr) * structure._3)
   }
 
   def martensiteTempering: Double = -74 - (434 * C) - (368 * S) + (15 * Mn) + (37 * Ni) + (17 * Cr) - (335 * Mo) - (2235 * V) +
