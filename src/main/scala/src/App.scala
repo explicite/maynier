@@ -1,4 +1,4 @@
-import javax.swing.BorderFactory
+import javax.swing.{UIManager, BorderFactory}
 import org.jfree.chart.axis.LogAxis
 import scala.swing.event.ButtonClicked
 import scalax.chart.XYChart
@@ -14,7 +14,7 @@ object App extends SwingApplication {
   lazy val Vr: Seq[Double] = Seq(4.271768789, 4.253662777, 4.186012187, 4.587602184, 4.563631816, 4.563631816, 5.064236646, 5.064236646, 6.147445089, 6.208296092, 6.347445089, 8.90295406, 9.10295406, 12.95147088)
 
   lazy val CTPData = Seq((0, 0)).toXYSeriesCollection("default")
-  lazy val CTPChart: XYChart = XYDeviationChart(CTPData, title = "CTP", rangeAxisLabel = "%", domainAxisLabel = "T[s]")
+  lazy val CTPChart: XYChart = XYDeviationChart(CTPData, title = "CTP", rangeAxisLabel = "%")
   CTPChart.plot.setDomainAxis(new LogAxis())
 
   lazy val hardnessData = Seq((0, 0)).toXYSeriesCollection("default")
@@ -57,10 +57,10 @@ object App extends SwingApplication {
   lazy val timeLabel = new Label("t")
 
   lazy val temperingTemperature = field
-  temperingTemperature.text = "400"
+  temperingTemperature.text = "600"
 
   lazy val temperingTime = field
-  temperingTime.text = "1800"
+  temperingTime.text = "7200"
 
   lazy val compute = new Button("compute")
 
@@ -121,35 +121,36 @@ object App extends SwingApplication {
     reactions += {
       case ButtonClicked(`compute`) =>
         val model: Mayiner = Mayiner(carbon, manganese, nickel, chromium, molybdenum, sulfur, vanadium, astenitizintTemperature, astenitizintTime, temperingTemperature, temperingTime)
-        val points: Seq[Double] = model.transitPoints
+        val speed: Seq[Double] = model.transitPoints
+
         CTPData.removeAllSeries()
         CTPData.addSeries(
           Seq(
-            (points(0), 100),
-            (points(1), 90),
-            (points(2), 50),
-            (points(3), 0),
-            (points(7), 0)).toXYSeries("martensite"))
+            (speedToTime(speed(0)), 100),
+            (speedToTime(speed(1)), 90),
+            (speedToTime(speed(2)), 50),
+            (speedToTime(speed(3)), 0),
+            (speedToTime(speed(7)), 0)).toXYSeries("martensite"))
 
         CTPData.addSeries(
           Seq(
-            (points(0), 0),
-            (points(1), 10),
-            (points(2), 50),
-            (points(3), 100),
-            (points(4), 90),
-            (points(5), 50),
-            (points(6), 10),
-            (points(7), 0)).toXYSeries("bainite"))
+            (speedToTime(speed(0)), 0),
+            (speedToTime(speed(1)), 10),
+            (speedToTime(speed(2)), 50),
+            (speedToTime(speed(3)), 100),
+            (speedToTime(speed(4)), 90),
+            (speedToTime(speed(5)), 50),
+            (speedToTime(speed(6)), 10),
+            (speedToTime(speed(7)), 0)).toXYSeries("bainite"))
 
         CTPData.addSeries(
           Seq(
-            (points(0), 0),
-            (points(3), 0),
-            (points(4), 10),
-            (points(5), 50),
-            (points(7), 100),
-            (points(6), 90)).toXYSeries("ferrite-perlite"))
+            (speedToTime(speed(0)), 0),
+            (speedToTime(speed(3)), 0),
+            (speedToTime(speed(4)), 10),
+            (speedToTime(speed(5)), 50),
+            (speedToTime(speed(7)), 100),
+            (speedToTime(speed(6)), 90)).toXYSeries("ferrite-perlite"))
 
         hardnessData.removeAllSeries()
 
@@ -163,6 +164,8 @@ object App extends SwingApplication {
   }
 
   override def startup(args: Array[String]) {
+    UIManager.setLookAndFeel(
+      UIManager.getSystemLookAndFeelClassName)
     top.visible = true
   }
 
@@ -179,4 +182,6 @@ object App extends SwingApplication {
   }
 
   implicit def TextField2Double(f: TextField): Double = f.text.toDouble
+
+  def speedToTime(Vr: Double): Double = (astenitizintTemperature - 20) / Vr * 3600
 }
