@@ -1,17 +1,17 @@
 import javax.swing.{UIManager, BorderFactory}
-import org.jfree.chart.axis.LogAxis
 import scala.swing.event.ButtonClicked
+import scala.swing.Orientation.Vertical
+import org.jfree.chart.axis.LogAxis
+import scalax.chart.Charting._
 import scalax.chart.XYChart
 import scala.swing._
-import scalax.chart.Charting._
-import scala.swing.Orientation._
 
 /**
  * @author Jan Paw 
  *         Date: 1/22/14
  */
 object App extends SwingApplication {
-  lazy val Vr: Seq[Double] = Seq(4.271768789, 4.253662777, 4.186012187, 4.587602184, 4.563631816, 4.563631816, 5.064236646, 5.064236646, 6.147445089, 6.208296092, 6.347445089, 8.90295406, 9.10295406, 12.95147088)
+  lazy val Vr: Seq[Double] = Seq(4.251735223702 * 3600, 4.237057009356 * 3600, 4.153866781770 * 3600, 4.252470701687 * 3600, 4.539818783175 * 3600, 4.539818783175 * 3600, 4.539818783175 * 3600, 4.539818783175 * 3600, 5.031269055548 * 3600, 5.031269055548 * 3600, 6.087656481774 * 3600, 8.805141677392 * 3600, 8.805141677392 * 3600, 13.663108419912 * 3600)
 
   lazy val CTPData = Seq((0, 0)).toXYSeriesCollection("default")
   lazy val CTPChart: XYChart = XYDeviationChart(CTPData, title = "CTP", rangeAxisLabel = "%")
@@ -20,46 +20,46 @@ object App extends SwingApplication {
   lazy val hardnessData = Seq((0, 0)).toXYSeriesCollection("default")
   lazy val hardnessChart: XYChart = XYDeviationChart(hardnessData, title = "Hardness", rangeAxisLabel = "HV")
 
-  lazy val carbon = field
+  lazy val carbon = textField
   carbon.text = "0.35"
   lazy val carbonLabel = new Label("C")
 
-  lazy val manganese = field
+  lazy val manganese = textField
   manganese.text = "0.72"
   lazy val manganeseLabel = new Label("Mn")
 
-  lazy val nickel = field
+  lazy val nickel = textField
   nickel.text = "0.09"
   lazy val nickelLabel = new Label("Ni")
 
-  lazy val chromium = field
+  lazy val chromium = textField
   chromium.text = "1.13"
   lazy val chromiumLabel = new Label("Cr")
 
-  lazy val molybdenum = field
+  lazy val molybdenum = textField
   molybdenum.text = "0.26"
   lazy val molybdenumLabel = new Label("Mo")
 
-  lazy val sulfur = field
+  lazy val sulfur = textField
   sulfur.text = "0.40"
   lazy val sulfurLabel = new Label("S")
 
-  lazy val vanadium = field
+  lazy val vanadium = textField
   vanadium.text = "0.05"
   lazy val vanadiumLabel = new Label("V")
 
-  lazy val astenitizintTemperature = field
+  lazy val astenitizintTemperature = textField
   astenitizintTemperature.text = "900"
   lazy val temperatureLabel = new Label("T")
 
-  lazy val astenitizintTime = field
+  lazy val astenitizintTime = textField
   astenitizintTime.text = "1800"
   lazy val timeLabel = new Label("t")
 
-  lazy val temperingTemperature = field
+  lazy val temperingTemperature = textField
   temperingTemperature.text = "600"
 
-  lazy val temperingTime = field
+  lazy val temperingTime = textField
   temperingTime.text = "7200"
 
   lazy val compute = new Button("compute")
@@ -120,37 +120,48 @@ object App extends SwingApplication {
     listenTo(compute)
     reactions += {
       case ButtonClicked(`compute`) =>
-        val model: Mayiner = Mayiner(carbon, manganese, nickel, chromium, molybdenum, sulfur, vanadium, astenitizintTemperature, astenitizintTime, temperingTemperature, temperingTime)
-        val speed: Seq[Double] = model.transitPoints
+        val model: Mayiner = Mayiner(
+          carbon,
+          manganese,
+          nickel,
+          chromium,
+          molybdenum,
+          sulfur,
+          vanadium,
+          astenitizintTemperature, astenitizintTime,
+          temperingTemperature, temperingTime)
+
+        val transitPoints: Seq[Double] = model.transitionPoints
 
         CTPData.removeAllSeries()
-        CTPData.addSeries(
-          Seq(
-            (speedToTime(speed(0)), 100),
-            (speedToTime(speed(1)), 90),
-            (speedToTime(speed(2)), 50),
-            (speedToTime(speed(3)), 0),
-            (speedToTime(speed(7)), 0)).toXYSeries("martensite"))
 
         CTPData.addSeries(
           Seq(
-            (speedToTime(speed(0)), 0),
-            (speedToTime(speed(1)), 10),
-            (speedToTime(speed(2)), 50),
-            (speedToTime(speed(3)), 100),
-            (speedToTime(speed(4)), 90),
-            (speedToTime(speed(5)), 50),
-            (speedToTime(speed(6)), 10),
-            (speedToTime(speed(7)), 0)).toXYSeries("bainite"))
+            (speedToTime(transitPoints(0)), 100),
+            (speedToTime(transitPoints(1)), 90),
+            (speedToTime(transitPoints(2)), 50),
+            (speedToTime(transitPoints(3)), 0),
+            (speedToTime(transitPoints(7)), 0)).toXYSeries("martensite"))
 
         CTPData.addSeries(
           Seq(
-            (speedToTime(speed(0)), 0),
-            (speedToTime(speed(3)), 0),
-            (speedToTime(speed(4)), 10),
-            (speedToTime(speed(5)), 50),
-            (speedToTime(speed(7)), 100),
-            (speedToTime(speed(6)), 90)).toXYSeries("ferrite-perlite"))
+            (speedToTime(transitPoints(0)), 0),
+            (speedToTime(transitPoints(1)), 10),
+            (speedToTime(transitPoints(2)), 50),
+            (speedToTime(transitPoints(3)), 100),
+            (speedToTime(transitPoints(4)), 90),
+            (speedToTime(transitPoints(5)), 50),
+            (speedToTime(transitPoints(6)), 10),
+            (speedToTime(transitPoints(7)), 0)).toXYSeries("bainite"))
+
+        CTPData.addSeries(
+          Seq(
+            (speedToTime(transitPoints(0)), 0),
+            (speedToTime(transitPoints(3)), 0),
+            (speedToTime(transitPoints(4)), 10),
+            (speedToTime(transitPoints(5)), 50),
+            (speedToTime(transitPoints(7)), 100),
+            (speedToTime(transitPoints(6)), 90)).toXYSeries("ferrite-perlite"))
 
         hardnessData.removeAllSeries()
 
@@ -175,7 +186,7 @@ object App extends SwingApplication {
   def resourceFromUserDirectory(path: String): java.io.File =
     new java.io.File(util.Properties.userDir, path)
 
-  def field = new TextField {
+  def textField = new TextField {
     text = "0"
     columns = 5
     horizontalAlignment = Alignment.Left
