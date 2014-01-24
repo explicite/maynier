@@ -1,0 +1,1 @@
+sbtassembly.Plugin.assemblySettings

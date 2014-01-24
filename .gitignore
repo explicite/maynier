@@ -219,6 +219,10 @@ pip-log.txt
 #############
 .idea
 .idea_modules
-project
-target
 *.iml
+
+#############
+## SBT
+#############
+target
+.history
