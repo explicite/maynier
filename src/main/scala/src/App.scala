@@ -50,17 +50,19 @@ object App extends SwingApplication {
 
   lazy val astenitizintTemperature = textField
   astenitizintTemperature.text = "900"
-  lazy val temperatureLabel = new Label("T")
+  lazy val asutenitizintTemperatureLabel = new Label("T")
 
   lazy val astenitizintTime = textField
   astenitizintTime.text = "1800"
-  lazy val timeLabel = new Label("t")
+  lazy val astenitizingTimeLabel = new Label("t")
 
   lazy val temperingTemperature = textField
   temperingTemperature.text = "600"
+  lazy val temperingTemperatureLabel = new Label("T")
 
   lazy val temperingTime = textField
   temperingTime.text = "7200"
+  lazy val temperingTimeLabel = new Label("t")
 
   lazy val compute = new Button("compute")
 
@@ -79,8 +81,8 @@ object App extends SwingApplication {
   }
 
   lazy val austenitizing = new GridPanel(2, 2) {
-    contents ++= astenitizintTemperature :: temperatureLabel ::
-      astenitizintTime :: timeLabel :: Nil
+    contents ++= astenitizintTemperature :: asutenitizintTemperatureLabel ::
+      astenitizintTime :: astenitizingTimeLabel :: Nil
 
     border = BorderFactory.createCompoundBorder(
       BorderFactory.createTitledBorder("austenitizing"),
@@ -89,8 +91,8 @@ object App extends SwingApplication {
   }
 
   lazy val tempering = new GridPanel(2, 2) {
-    contents ++= temperingTemperature :: temperatureLabel ::
-      temperingTime :: timeLabel :: Nil
+    contents ++= temperingTemperature :: temperingTemperatureLabel ::
+      temperingTime :: temperingTimeLabel :: Nil
 
     border = BorderFactory.createCompoundBorder(
       BorderFactory.createTitledBorder("tempering"),
