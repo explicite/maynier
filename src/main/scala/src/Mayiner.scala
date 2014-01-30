@@ -78,7 +78,7 @@ case class Mayiner(C: Double, Mn: Double, Ni: Double, Cr: Double, Mo: Double, S:
 
   /**
    * <p>Alloy hardness after quenching calculated from formula:</p>
-   * HV += component hardness + component rate
+   * HV += component hardness * component rate
    *
    * @param Vr quenching speed [C/h]
    * @return alloy hardness after quenching

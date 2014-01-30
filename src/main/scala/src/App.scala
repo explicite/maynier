@@ -134,36 +134,37 @@ object App extends SwingApplication {
           temperingTemperature, temperingTime)
 
         val transitPoints: Seq[Double] = model.transitionPoints
+        def speedToTime(Vr: Int): Double = (astenitizintTemperature - 20) / transitPoints(Vr) * 3600
 
         CTPData.removeAllSeries()
 
         CTPData.addSeries(
           Seq(
-            (speedToTime(transitPoints(0)), 100),
-            (speedToTime(transitPoints(1)), 90),
-            (speedToTime(transitPoints(2)), 50),
-            (speedToTime(transitPoints(3)), 0),
-            (speedToTime(transitPoints(7)), 0)).toXYSeries("martensite"))
+            (speedToTime(0), 100),
+            (speedToTime(1), 90),
+            (speedToTime(2), 50),
+            (speedToTime(3), 0),
+            (speedToTime(7), 0)).toXYSeries("martensite"))
 
         CTPData.addSeries(
           Seq(
-            (speedToTime(transitPoints(0)), 0),
-            (speedToTime(transitPoints(1)), 10),
-            (speedToTime(transitPoints(2)), 50),
-            (speedToTime(transitPoints(3)), 100),
-            (speedToTime(transitPoints(4)), 90),
-            (speedToTime(transitPoints(5)), 50),
-            (speedToTime(transitPoints(6)), 10),
-            (speedToTime(transitPoints(7)), 0)).toXYSeries("bainite"))
+            (speedToTime(0), 0),
+            (speedToTime(1), 10),
+            (speedToTime(2), 50),
+            (speedToTime(3), 100),
+            (speedToTime(4), 90),
+            (speedToTime(5), 50),
+            (speedToTime(6), 10),
+            (speedToTime(7), 0)).toXYSeries("bainite"))
 
         CTPData.addSeries(
           Seq(
-            (speedToTime(transitPoints(0)), 0),
-            (speedToTime(transitPoints(3)), 0),
-            (speedToTime(transitPoints(4)), 10),
-            (speedToTime(transitPoints(5)), 50),
-            (speedToTime(transitPoints(7)), 100),
-            (speedToTime(transitPoints(6)), 90)).toXYSeries("ferrite-perlite"))
+            (speedToTime(0), 0),
+            (speedToTime(3), 0),
+            (speedToTime(4), 10),
+            (speedToTime(5), 50),
+            (speedToTime(7), 100),
+            (speedToTime(6), 90)).toXYSeries("ferrite-perlite"))
 
         hardnessData.removeAllSeries()
 
@@ -195,6 +196,4 @@ object App extends SwingApplication {
   }
 
   implicit def TextField2Double(f: TextField): Double = f.text.toDouble
-
-  def speedToTime(Vr: Double): Double = (astenitizintTemperature - 20) / Vr * 3600
 }
