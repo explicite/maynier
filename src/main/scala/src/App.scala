@@ -48,12 +48,12 @@ object App extends SwingApplication {
   vanadium.text = "0.05"
   lazy val vanadiumLabel = new Label("V")
 
-  lazy val astenitizintTemperature = textField
-  astenitizintTemperature.text = "900"
+  lazy val astenitizingTemperature = textField
+  astenitizingTemperature.text = "900"
   lazy val asutenitizintTemperatureLabel = new Label("T")
 
-  lazy val astenitizintTime = textField
-  astenitizintTime.text = "1800"
+  lazy val astenitizingTime = textField
+  astenitizingTime.text = "1800"
   lazy val astenitizingTimeLabel = new Label("t")
 
   lazy val temperingTemperature = textField
@@ -81,8 +81,8 @@ object App extends SwingApplication {
   }
 
   lazy val austenitizing = new GridPanel(2, 2) {
-    contents ++= astenitizintTemperature :: asutenitizintTemperatureLabel ::
-      astenitizintTime :: astenitizingTimeLabel :: Nil
+    contents ++= astenitizingTemperature :: asutenitizintTemperatureLabel ::
+      astenitizingTime :: astenitizingTimeLabel :: Nil
 
     border = BorderFactory.createCompoundBorder(
       BorderFactory.createTitledBorder("austenitizing"),
@@ -130,11 +130,11 @@ object App extends SwingApplication {
           molybdenum,
           sulfur,
           vanadium,
-          astenitizintTemperature, astenitizintTime,
+          astenitizingTemperature, astenitizingTime,
           temperingTemperature, temperingTime)
 
         val transitPoints: Seq[Double] = model.transitionPoints
-        def speedToTime(Vr: Int): Double = (astenitizintTemperature - 20) / transitPoints(Vr) * 3600
+        def speedToTime(Vr: Int): Double = (astenitizingTemperature - 20) / transitPoints(Vr) * 3600
 
         CTPData.removeAllSeries()
 
