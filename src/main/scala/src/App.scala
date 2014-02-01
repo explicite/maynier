@@ -20,48 +20,38 @@ object App extends SwingApplication {
   lazy val hardnessData = Seq((0, 0)).toXYSeriesCollection("default")
   lazy val hardnessChart: XYChart = XYDeviationChart(hardnessData, title = "Hardness", rangeAxisLabel = "HV")
 
-  lazy val carbon = textField
-  carbon.text = "0.35"
+  lazy val carbon: TextField = 0.35
   lazy val carbonLabel = new Label("C")
 
-  lazy val manganese = textField
-  manganese.text = "0.72"
+  lazy val manganese: TextField = 0.72
   lazy val manganeseLabel = new Label("Mn")
 
-  lazy val nickel = textField
+  lazy val nickel: TextField = 0.09
   nickel.text = "0.09"
   lazy val nickelLabel = new Label("Ni")
 
-  lazy val chromium = textField
-  chromium.text = "1.13"
+  lazy val chromium: TextField = 1.13
   lazy val chromiumLabel = new Label("Cr")
 
-  lazy val molybdenum = textField
-  molybdenum.text = "0.26"
+  lazy val molybdenum: TextField = 0.26
   lazy val molybdenumLabel = new Label("Mo")
 
-  lazy val sulfur = textField
-  sulfur.text = "0.40"
-  lazy val sulfurLabel = new Label("S")
+  lazy val silicon: TextField = 0.4
+  lazy val siliconLabel = new Label("Si")
 
-  lazy val vanadium = textField
-  vanadium.text = "0.05"
+  lazy val vanadium: TextField = 0.05
   lazy val vanadiumLabel = new Label("V")
 
-  lazy val astenitizingTemperature = textField
-  astenitizingTemperature.text = "900"
+  lazy val astenitizingTemperature: TextField = 900
   lazy val asutenitizintTemperatureLabel = new Label("T")
 
-  lazy val astenitizingTime = textField
-  astenitizingTime.text = "1800"
+  lazy val astenitizingTime: TextField = 1800
   lazy val astenitizingTimeLabel = new Label("t")
 
-  lazy val temperingTemperature = textField
-  temperingTemperature.text = "600"
+  lazy val temperingTemperature: TextField = 600
   lazy val temperingTemperatureLabel = new Label("T")
 
-  lazy val temperingTime = textField
-  temperingTime.text = "7200"
+  lazy val temperingTime: TextField = 7200
   lazy val temperingTimeLabel = new Label("t")
 
   lazy val compute = new Button("compute")
@@ -69,7 +59,7 @@ object App extends SwingApplication {
   lazy val alloyingElements = new GridPanel(7, 2) {
     contents ++= carbon :: carbonLabel ::
       manganese :: manganeseLabel ::
-      sulfur :: sulfurLabel ::
+      silicon :: siliconLabel ::
       chromium :: chromiumLabel ::
       nickel :: nickelLabel ::
       molybdenum :: molybdenumLabel ::
@@ -128,7 +118,7 @@ object App extends SwingApplication {
           nickel,
           chromium,
           molybdenum,
-          sulfur,
+          silicon,
           vanadium,
           astenitizingTemperature, astenitizingTime,
           temperingTemperature, temperingTime)
@@ -189,11 +179,13 @@ object App extends SwingApplication {
   def resourceFromUserDirectory(path: String): java.io.File =
     new java.io.File(util.Properties.userDir, path)
 
-  def textField = new TextField {
-    text = "0"
+  def textField(d: Double) = new TextField {
+    text = d.toString
     columns = 5
     horizontalAlignment = Alignment.Left
   }
 
   implicit def TextField2Double(f: TextField): Double = f.text.toDouble
+
+  implicit def Double2TextField(d: Double): TextField = textField(d)
 }

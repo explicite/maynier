@@ -9,7 +9,7 @@ import scala.math.{log, log10, sqrt, pow}
  * @param Ni nickel rate
  * @param Cr chromium rate
  * @param Mo molybdenum rate
- * @param S sulfur rate
+ * @param Si silicon rate
  * @param V vanadium rate
  * @param aT aust. temperature [C]
  * @param at aust. time [s]
@@ -19,7 +19,7 @@ import scala.math.{log, log10, sqrt, pow}
  * @author Jan Paw
  *         Date: 1/22/14
  */
-case class Mayiner(C: Double, Mn: Double, Ni: Double, Cr: Double, Mo: Double, S: Double, V: Double, aT: Double, at: Double, tT: Double, tt: Double) {
+case class Mayiner(C: Double, Mn: Double, Ni: Double, Cr: Double, Mo: Double, Si: Double, V: Double, aT: Double, at: Double, tT: Double, tt: Double) {
 
   //Activation energy for low alloy steel [J/mol]
   val H: Double = 418000
@@ -62,19 +62,19 @@ case class Mayiner(C: Double, Mn: Double, Ni: Double, Cr: Double, Mo: Double, S:
    * @param Vr quenching speed [C/h]
    * @return martensite hardness after quenching
    */
-  def martensiteQuenching(Vr: Double): Double = 127 + (949 * C) + (27 * S) + (11 * Mn) + (8 * Ni) + (16 * Cr) + (21 * log10(Vr))
+  def martensiteQuenching(Vr: Double): Double = 127 + (949 * C) + (27 * Si) + (11 * Mn) + (8 * Ni) + (16 * Cr) + (21 * log10(Vr))
 
   /**
    * @param Vr quenching speed [C/h]
    * @return bainite hardness after quenching
    */
-  def bainiteQuenching(Vr: Double): Double = -323 + (158 * C) + (330 * S) + (153 * Mn) + (65 * Ni) + (144 * Cr) + (191 * Mo) + (log10(Vr) * (89 + (53 * C) - (55 * S) - (22 * Mn) - (10 * Ni) - (20 * Cr) - (33 * Mo)))
+  def bainiteQuenching(Vr: Double): Double = -323 + (158 * C) + (330 * Si) + (153 * Mn) + (65 * Ni) + (144 * Cr) + (191 * Mo) + (log10(Vr) * (89 + (53 * C) - (55 * Si) - (22 * Mn) - (10 * Ni) - (20 * Cr) - (33 * Mo)))
 
   /**
    * @param Vr quenching speed [C/h]
    * @return perlite-ferrite hardness after quenching
    */
-  def perliteFerriteQuenching(Vr: Double): Double = 42 + (223 * C) + (53 * S) + (30 * Mn) + (12.6 * Ni) + (7 * Cr) + (19 * Mo) + (log10(Vr) * (10 - (19 * S) + (4 * Ni) + (8 * Cr) + (130 * V)))
+  def perliteFerriteQuenching(Vr: Double): Double = 42 + (223 * C) + (53 * Si) + (30 * Mn) + (12.6 * Ni) + (7 * Cr) + (19 * Mo) + (log10(Vr) * (10 - (19 * Si) + (4 * Ni) + (8 * Cr) + (130 * V)))
 
   /**
    * <p>Alloy hardness after quenching calculated from formula:</p>
@@ -91,14 +91,14 @@ case class Mayiner(C: Double, Mn: Double, Ni: Double, Cr: Double, Mo: Double, S:
   /**
    * @return martensite hardness after tempering
    */
-  def martensiteTempering: Double = -74 - (434 * C) - (368 * S) + (15 * Mn) + (37 * Ni) + (17 * Cr) - (335 * Mo) - (2235 * V) +
-    ((1000 / Pa(tT + 273, tt)) * (260 + (616 * C) + (321 * S) + (21 * Mn) - (35 * Ni) - (11 * Cr) + (352 * Mo) + (2345 * V)))
+  def martensiteTempering: Double = -74 - (434 * C) - (368 * Si) + (15 * Mn) + (37 * Ni) + (17 * Cr) - (335 * Mo) - (2235 * V) +
+    ((1000 / Pa(tT + 273, tt)) * (260 + (616 * C) + (321 * Si) + (21 * Mn) - (35 * Ni) - (11 * Cr) + (352 * Mo) + (2345 * V)))
 
   /**
    * @return bainite hardness after tempering
    */
-  def bainiteTempering: Double = 262 + (163 * C) - (349 * S) - (64 * Mn) - (6 * Ni) - (186 * Cr) - (458 * Mo) - (867 * V) +
-    ((1000 / Pa(tT + 273, tt)) * (-149 + (43 * C) + (336 * S) + (79 * Mn) + (16 * Ni) + (196 * Cr) + (498 * Mo) + (1094 * V)))
+  def bainiteTempering: Double = 262 + (163 * C) - (349 * Si) - (64 * Mn) - (6 * Ni) - (186 * Cr) - (458 * Mo) - (867 * V) +
+    ((1000 / Pa(tT + 273, tt)) * (-149 + (43 * C) + (336 * Si) + (79 * Mn) + (16 * Ni) + (196 * Cr) + (498 * Mo) + (1094 * V)))
 
   /**
    * <p>Alloy hardness after tempering calculated from formula:</p>
