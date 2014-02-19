@@ -1,17 +1,19 @@
 import javax.swing.{UIManager, BorderFactory}
+import scala.collection.mutable.ArrayBuffer
 import scala.swing.event.ButtonClicked
 import scala.swing.Orientation.Vertical
 import org.jfree.chart.axis.LogAxis
 import scalax.chart.Charting._
 import scalax.chart.XYChart
 import scala.swing._
+import src.fem.FEM
 
 /**
  * @author Jan Paw 
  *         Date: 1/22/14
  */
 object App extends SwingApplication {
-  lazy val Vr: Seq[Double] = Seq(4.251735223702 * 3600, 4.237057009356 * 3600, 4.153866781770 * 3600, 4.252470701687 * 3600, 4.539818783175 * 3600, 4.539818783175 * 3600, 4.539818783175 * 3600, 4.539818783175 * 3600, 5.031269055548 * 3600, 5.031269055548 * 3600, 6.087656481774 * 3600, 8.805141677392 * 3600, 8.805141677392 * 3600, 13.663108419912 * 3600)
+  //lazy val Vr: Seq[Double] = Seq(4.251735223702 * 3600, 4.237057009356 * 3600, 4.153866781770 * 3600, 4.252470701687 * 3600, 4.539818783175 * 3600, 4.539818783175 * 3600, 4.539818783175 * 3600, 4.539818783175 * 3600, 5.031269055548 * 3600, 5.031269055548 * 3600, 6.087656481774 * 3600, 8.805141677392 * 3600, 8.805141677392 * 3600, 13.663108419912 * 3600)
 
   lazy val CTPData = Seq((0, 0)).toXYSeriesCollection("default")
   lazy val CTPChart: XYChart = XYDeviationChart(CTPData, title = "CTP", rangeAxisLabel = "%")
@@ -54,6 +56,15 @@ object App extends SwingApplication {
   lazy val temperingTime: TextField = 7200
   lazy val temperingTimeLabel = new Label("t")
 
+  lazy val numberOfPoints: TextField = 20
+  lazy val numberOfPointsLabel = new Label("nodes")
+
+  lazy val radius: TextField = 0.08
+  lazy val radiusLabel = new Label("radius")
+
+  lazy val α: TextField = 300
+  lazy val αLabel = new Label("α")
+
   lazy val compute = new Button("compute")
 
   lazy val alloyingElements = new GridPanel(7, 2) {
@@ -90,8 +101,19 @@ object App extends SwingApplication {
     )
   }
 
+  lazy val fem = new GridPanel(3, 2) {
+    contents ++= numberOfPoints :: numberOfPointsLabel ::
+      radius :: radiusLabel ::
+      α :: αLabel :: Nil
+
+    border = BorderFactory.createCompoundBorder(
+      BorderFactory.createTitledBorder("fem"),
+      BorderFactory.createEmptyBorder(5, 5, 5, 5)
+    )
+  }
+
   lazy val menu = new BoxPanel(Vertical) {
-    contents ++= alloyingElements :: austenitizing :: tempering :: compute :: Nil
+    contents ++= alloyingElements :: austenitizing :: tempering :: fem :: compute :: Nil
   }
 
   lazy val charts = new BoxPanel(Vertical) {
@@ -112,6 +134,22 @@ object App extends SwingApplication {
     listenTo(compute)
     reactions += {
       case ButtonClicked(`compute`) =>
+        val fem = FEM(0.0, radius, α, astenitizingTemperature, Seq((20, 3600)), 700, 7800, 12E-6, 25, numberOfPoints.text.toDouble.toInt)
+        val data = fem(1.5, 0.00001)
+
+        val Vr: ArrayBuffer[Double] = ArrayBuffer.fill(data.head.length)(0.0)
+
+        for (i <- 0 until Vr.length) {
+          var t: Double = 0.0
+          for (j <- 0 until data.length - 1) {
+            if (data(j + 1)(i) > 500 && data(j)(i) < 800) {
+              Vr(i) += data(j)(i) - data(j + 1)(i)
+              t += 1.0
+            }
+          }
+          Vr(i) = Vr(i) / t * 3600.0
+        }
+
         val model: Mayiner = Mayiner(
           carbon,
           manganese,
